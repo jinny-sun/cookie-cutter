@@ -2,4 +2,6 @@
 *.json
 *.sav
 *.ipynb_checkpoints/
+*.pdf
+*.pem
 *DS_Store
