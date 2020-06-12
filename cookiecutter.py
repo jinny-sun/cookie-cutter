@@ -123,7 +123,7 @@ button = st.button('Get this recipe!')
 
 if button:
     # Process ingredient_string
-    serving_size = 24
+    serving_size = serving_size
     ingredient_string = ingredient_string + ';' # add semicolon to end of ingredient list for regex
     ingredient_string = string_replace(ingredient_string) # remove white space
     ingredient_string_tuple = get_ingredients(ingredient_string) # separate ingredients into list of tuples
