@@ -107,15 +107,15 @@ y_train = pd.read_csv('y_train.csv')
 
 # This includes the list of ingredients before cleaning
 
-ingredient_string = st.text_input('Input the ingredient list here, with each ingredient separated by a semicolon:', '1 cup packed brown sugar; 2 eggs; 1 teaspoon baking soda; 1 teaspoon salt; 1 teaspoon vanilla extract; 2 1/2 cups sifted all-purpose flour; 1/2 cup chopped walnuts; 2 cups semisweet chocolate chips')
+ingredient_string = st.text_input('Input the ingredient list here, with each ingredient separated by a semicolon:', '1 cup packed brown sugar; 1 cup white sugar; 1 cup butter; 2 eggs; 1 teaspoon baking soda; 1 teaspoon salt; 1 teaspoon vanilla extract; 2 1/2 cups sifted all-purpose flour; 1/2 cup chopped walnuts; 2 cups semisweet chocolate chips')
 if ingredient_string:
     st.write('Ingredients',ingredient_string)
 
-serving_size = st.number_input('How many servings is this recipe?', 24)
+serving_size = st.number_input('How many cookies will be made using this recipe?', 24)
 if ingredient_string:
-    st.write('This recipe has',serving_size,'servings')
+    st.write('This recipe will make',serving_size,'cookies')
 
-desiredcal = st.number_input('What is the maximum number of calories per serving you desire?', 200)
+desiredcal = st.number_input('What is the maximum number of calories per cookie you desire?', 200)
 if ingredient_string:
     st.write('I want',desiredcal,'calories or less')
 
@@ -190,9 +190,13 @@ if button:
     st.subheader('Calorie Predictor')
 
     calPerServing = round(predictions[0]/serving_size,1)
-    st.write('This recipe has ',calPerServing,'calories per serving')
+    st.write()
 
     if calPerServing < desiredcal:
-        'This recipe is less than', desiredcal,'calories per serving :grin:'
+        'If you make ', serving_size, 'cookies with this recipe, each cookie is', calPerServing, "calories. That's less than", desiredcal,'calories per cookie :grin:'
     else:
-        'This recipe is more than', desiredcal, 'calories per serving :cry:'
+        'If you make ', serving_size, 'cookies with this recipe, each cookie is', calPerServing, "calories. That's more than", desiredcal,'calories per cookie :cry:'
+        import math
+        new_servings = math.ceil(predictions[0]/desiredcal)
+        new_calories = round(predictions[0]/new_servings,1)
+        'If you make', new_servings, "cookies instead using the same recipe, each cookie is only", new_calories, "calories. That's less than", desiredcal,'calories per cookie :grin:'
