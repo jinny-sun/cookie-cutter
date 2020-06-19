@@ -4,20 +4,6 @@ import numpy as np
 import pandas as pd
 import re
 
-# Change web style
-# def local_css(file_name):
-#     with open(file_name) as f:
-#         st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
-#
-# def remote_css(url):
-#     st.markdown(f'<link href="{url}" rel="stylesheet">', unsafe_allow_html=True)
-#
-# def icon(icon_name):
-#     st.markdown(f'<i class="material-icons">{icon_name}</i>', unsafe_allow_html=True)
-#
-# local_css("style.css")
-# remote_css('https://fonts.googleapis.com/icon?family=Material+Icons')
-
 # Functions
 def string_replace(x):
     new_string = re.sub(' {2,}', ' ', x).replace("  ", ';').replace("\n", ";").replace("; ;", ";")
@@ -95,17 +81,14 @@ def convert_fractions (quantity):
     from fractions import Fraction
     return float(sum(Fraction(s) for s in quantity.split()))
 
-# App
+# Banner
+st.image('banner.png', use_column_width=True)
+st.title("Cut the calories from your cookie recipe!")
+st.subheader('What would you like to make?')
 
-st.title("CookieCutter")
-st.subheader('Cut the calories from your cookie recipe!')
-
+# Load training data
 X_train = pd.read_csv('X_train.csv')
-# X_test = pd.read_csv('X_test.csv')
 y_train = pd.read_csv('y_train.csv')
-# y_test = pd.read_csv('y_test.csv')
-
-# This includes the list of ingredients before cleaning
 
 ingredient_string = st.text_input('Input the ingredient list here:', '1 cup packed brown sugar; 1 cup white sugar; 1 cup butter; 2 eggs; 1 teaspoon baking soda; 1 teaspoon salt; 1 teaspoon vanilla extract; 2 1/2 cups sifted all-purpose flour; 1/2 cup chopped walnuts; 2 cups semisweet chocolate chips')
 if ingredient_string:
@@ -117,7 +100,7 @@ if ingredient_string:
 
 desiredcal = st.number_input('What is the maximum number of calories per cookie you desire?', 200)
 if ingredient_string:
-    st.write('I want',desiredcal,'calories or less')
+    st.write('Each cookie should have less than',desiredcal,'calories.')
 
 button = st.button('Get this recipe!')
 
@@ -169,33 +152,28 @@ if button:
     inglist = ''.join(inglist)
     inglist = [inglist]
 
-    # Calorie Prediction v2
+    # Calorie Prediction
     import pickle
     bow_transformer = pickle.load(open('bow_transformer.sav','rb'))
     ingredient_bow_train = pickle.load(open('ingredient_bow_train.sav','rb'))
     inglist_bow_test =  bow_transformer.transform(inglist)
 
-    # Linear Regression
-    # from sklearn.linear_model import LinearRegression
-    # linreg = LinearRegression()
-    # linreg.fit(ingredient_bow_train,y_train['totalCal'])
-    # predictions = linreg.predict(inglist_bow_test)
-
-    # Gradient Boosting
+    # Gradient Boosting Regressor
     from sklearn.ensemble import GradientBoostingRegressor
     gboost = GradientBoostingRegressor(loss="ls", learning_rate=0.03, n_estimators=1500, max_depth=7, min_samples_split=950, min_samples_leaf=6, subsample=0.8, max_features=21, random_state=10)
     gboost.fit(ingredient_bow_train, y_train['totalCal'])
     predictions = gboost.predict(inglist_bow_test)
 
+    # Output
     st.subheader('Calorie Predictor')
     calPerServing = round(predictions[0]/serving_size,1)
     st.write()
 
     if calPerServing < desiredcal:
-        'If you make ', serving_size, 'cookies with this recipe, each cookie is', calPerServing, "calories. That's less than", desiredcal,'calories per cookie :grin:'
+        'If you make ', serving_size, 'cookies with this recipe, each cookie is', calPerServing, "calories. That's less than", desiredcal,'calories per cookie! :grin:'
     else:
-        'If you make ', serving_size, 'cookies with this recipe, each cookie is', calPerServing, "calories. That's more than", desiredcal,'calories per cookie :cry:'
+        'If you make ', serving_size, 'cookies with this recipe, each cookie is', calPerServing, "calories. That's more than", desiredcal,'calories per cookie. :cry:'
         import math
         new_servings = math.ceil(predictions[0]/desiredcal)
         new_calories = round(predictions[0]/new_servings,1)
-        'If you make', new_servings, "cookies instead using the same recipe, each cookie is only", new_calories, "calories. That's less than", desiredcal,'calories per cookie :grin:'
+        'If you make', new_servings, "cookies instead using the same recipe, each cookie is only", new_calories, "calories. That's less than", desiredcal,'calories per cookie! :grin:'
