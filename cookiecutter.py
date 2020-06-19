@@ -20,7 +20,7 @@ import re
 
 # Functions
 def string_replace(x):
-    new_string = re.sub(' {2,}', ' ', x).replace("\n", ";").replace("; ;", ";")
+    new_string = re.sub(' {2,}', ' ', x).replace("  ", ';').replace("\n", ";").replace("; ;", ";")
 #    new_string = new_string.split(';')
     return(new_string)
 
@@ -107,7 +107,7 @@ y_train = pd.read_csv('y_train.csv')
 
 # This includes the list of ingredients before cleaning
 
-ingredient_string = st.text_input('Input the ingredient list here, with each ingredient separated by a semicolon:', '1 cup packed brown sugar; 1 cup white sugar; 1 cup butter; 2 eggs; 1 teaspoon baking soda; 1 teaspoon salt; 1 teaspoon vanilla extract; 2 1/2 cups sifted all-purpose flour; 1/2 cup chopped walnuts; 2 cups semisweet chocolate chips')
+ingredient_string = st.text_input('Input the ingredient list here:', '1 cup packed brown sugar; 1 cup white sugar; 1 cup butter; 2 eggs; 1 teaspoon baking soda; 1 teaspoon salt; 1 teaspoon vanilla extract; 2 1/2 cups sifted all-purpose flour; 1/2 cup chopped walnuts; 2 cups semisweet chocolate chips')
 if ingredient_string:
     st.write('Ingredients',ingredient_string)
 
@@ -183,12 +183,11 @@ if button:
 
     # Gradient Boosting
     from sklearn.ensemble import GradientBoostingRegressor
-    gboost = GradientBoostingRegressor(loss="ls")
+    gboost = GradientBoostingRegressor(loss="ls", learning_rate=0.03, n_estimators=1500, max_depth=7, min_samples_split=950, min_samples_leaf=6, subsample=0.8, max_features=21, random_state=10)
     gboost.fit(ingredient_bow_train, y_train['totalCal'])
     predictions = gboost.predict(inglist_bow_test)
 
     st.subheader('Calorie Predictor')
-
     calPerServing = round(predictions[0]/serving_size,1)
     st.write()
 
