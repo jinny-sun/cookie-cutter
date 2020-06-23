@@ -47,7 +47,7 @@ Several regression models were assessed, including linear regression, random for
 
 The linear regression performed the worst, most likely due to the large number of features, and inaccurately assigned the largest coefficients, which tells the model the amount of calories per gram of ingredient, to irrelevant features. For example, the largest coefficient was assigned to salt. 
 
-All tree-based methods accurately identified the most important features contributing to calories, such as sugar, chocolate, and flour. Boosting models performed better than the random forest. While gradient boosting and XGBoost had similar performance metrics based on R<sup>2</sup>, gradient boosting was ultimately chosen as the preferred model since XGBoost had a larger over-estimation of the calories of an individual ingredient. 
+All tree-based methods accurately identified the most important features contributing to calories, such as sugar, chocolate, and flour. Boosting models performed better than the random forest. While gradient boosting and XGBoost had similar performance metrics based on R<sup>2</sup>, gradient boosting was ultimately chosen as the preferred model since XGBoost had a larger over-estimation of the calories of an individual ingredient because it performed additional feature selection to a final count of 64 features.
 
 | 1 cup (ingredient) | True Calories | Predicted<br>(Lin. Reg.) | Predicted<br>(Random Forest) | Predicted<br>(Gradient Boosting) | Predicted<br>(XGBoost) |
 | :---- |:-----------: | :---------------: |:----------------: |:----------------: |:----------------: |
@@ -64,9 +64,7 @@ The work presented in this post was accomplished in a short sprint (3 weeks). Gi
     
 2) Engineering improvements
   To improve the user interface of the web app, I would enable URL input with real-time web scraping. Currently the input of ingredients must be semicolon-separated, which makes the user interaction more cumbersome. This is because the Streamlit app automatically removes whitespace, symbols, and other types of characters. Below is an example of a list of ingredients that is difficult to parse using RegEx since the input string can contain commas, parenthesis, and non-essential numerical values.
-
-| 2 cups all-purpose flour 2 bars chocolate, chopped into 1/2 inch cubes |
-|:-----|
+    * 2 cups all-purpose flour 2 bars chocolate, chopped into 1/2 inch cubes
 
 3) Data enhancements:
   While feature engineering greatly improved model performance due to the small dataset (2.2k recipes), the removal of rare ingredients reduces the useability of the app. Curating more data will allow for more features to be included and also expand the model to other types of recipes and cuisines. Furthermore, a BERT model could be used to categorize recipes based on the type of cuisine. This is useful since cookie recipes may require a different model for calorie prediction than other types of recipes. 
