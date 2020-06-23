@@ -1,8 +1,16 @@
-# CookieCutter
+---
+layout: post
+title: CookieCutter
+subtitle: Personalized portion control using calorie prediction
+cover-img: /assets/img/cookie.jpg
+gh-repo: jinny-sun/cookie-cutter
+gh-badge: [star, fork, follow]
+tags: [python, nlp]
+---
 
 Do you love baking cookies? Have you ever used a recipe that didn't include important nutritional information, such as the calories per cookie? CookieCutter is a web app that predicts the calories per cookie of a given recipe. It also provides personalized portion control suggestions to help you meet your caloric needs.
 
-This app was created during my fellowship at [Insight Data Science](https://insightfellows.com/) and is currently hosted [here](cookie-cutter.xyz).
+This app was created during my fellowship at [Insight Data Science](https://insightfellows.com/). More details on the [web app](cookie-cutter.xyz) can be found in these [presentation slides](https://tinyurl.com/cookie-cutter) and on this [blog post](http://www.jinnysun.com/2020-06-19-cookie-cutter/).
 
 ## How does CookieCutter work?
 CookieCutter uses **bag of words** vectorization to convert ingredient lists into numerical predictors that are fed into a pretrained Gradient Boosting Regressor to estimate how many calories are in each cookie. The algorithm represents each recipe as a high-dimensional vector of ingredient names and the amount of ingredient required for the recipe.
@@ -13,7 +21,10 @@ Here is an example recipe.
 
 | Recipe Name | Ingredients | Number of Servings | Calories per Serving |
 | :---------- |:----------- | :----------------: | :------------------: |
-| Best cookie recipe | ¾ cup White Sugar, granulated<br>8 ounces Butter (softened)<br>2 ½ cups All-purpose Flour<br>1 teaspoon Baking Soda | 12 | 214.3 |
+| Best cookie recipe | ¾ cup White Sugar, granulated | 12 | 214.3 |
+|   | 8 ounces Butter (softened) |
+|   | 2 ½ cups All-purpose Flour
+|   | 1 teaspoon Baking Soda |
 
 The ingredients strings are pre-processed using RegEx and NLTK library. This includes:
 - Converting unicode characters to strings
@@ -44,3 +55,19 @@ All tree-based methods accurately identified the most important features contrib
 | Flour | 445 | 1,730 | 2,478 | 1,777 | 1,955 |
 | Chocolate | 805 | 2,260 | 3,287 | 2,652 | 2,971 |
 | Salt | 0 | 33,303 | 3,567 | 3,637 | 2,755 |
+
+## Future Directions
+The work presented in this post was accomplished in a short sprint (3 weeks). Given more time and resources, I would prioritize three main improvements. 
+
+1) Model Improvements
+    One drawback of using n-grams and part-of-speech tagging for tokenization is that it cannot differentiate between different categories of nouns. To address this, a manual list of unnecessary nouns was curated in order to create a minimal viable product. The ideal way to tokenize the ingredients is to use Word2Vec, which would be able to differentiate between ingredients and other unnecessary words and is capable of integrating rare or new ingredients using inference based on the values of related words or nearby vectors using cosine similiarity. 
+    
+2) Engineering improvements
+  To improve the user interface of the web app, I would enable URL input with real-time web scraping. Currently the input of ingredients must be semicolon-separated, which makes the user interaction more cumbersome. This is because the Streamlit app automatically removes whitespace, symbols, and other types of characters. Below is an example of a list of ingredients that is difficult to parse using RegEx since the input string can contain commas, parenthesis, and non-essential numerical values.
+
+| 2 cups all-purpose flour 2 bars chocolate, chopped into 1/2 inch cubes |
+|:-----|
+
+3) Data enhancements:
+  While feature engineering greatly improved model performance due to the small dataset (2.2k recipes), the removal of rare ingredients reduces the useability of the app. Curating more data will allow for more features to be included and also expand the model to other types of recipes and cuisines. Furthermore, a BERT model could be used to categorize recipes based on the type of cuisine. This is useful since cookie recipes may require a different model for calorie prediction than other types of recipes. 
+
